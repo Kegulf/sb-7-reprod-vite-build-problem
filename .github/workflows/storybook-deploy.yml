@@ -11,9 +11,6 @@ jobs:
   deploy-storybook:
     name: Deploy React Storybook
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./web
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -32,6 +29,6 @@ jobs:
           cd storybook-out
           git add .
           git commit -am "Deploy Storybook to GitHub Pages"
-          cd ../..
-          git subtree split --prefix web/storybook-out -b gh-pages
+          cd ..
+          git subtree split --prefix storybook-out -b gh-pages
           git push -f origin gh-pages:gh-pages
