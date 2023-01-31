@@ -1,0 +1,37 @@
+name: Deploy React Storybook
+
+on: 
+  release:
+    types: [created]
+  push:
+    branches:
+      - main
+      - "**"
+jobs:
+  deploy-storybook:
+    name: Deploy React Storybook
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - run: npm ci
+      - name: Build storybook
+        run: npm run build-storybook
+      - name: Publish to GitHub Pages
+        run: |
+          git config user.name "GH Pages Bot"
+          git config user.email "hello@ghbot.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+          cd storybook-out
+          git add .
+          git commit -am "Deploy Storybook to GitHub Pages"
+          cd ../..
+          git subtree split --prefix web/storybook-out -b gh-pages
+          git push -f origin gh-pages:gh-pages
